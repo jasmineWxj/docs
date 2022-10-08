@@ -205,3 +205,63 @@ const vm = new Vue({
     }
 })
 ````
+
+## 监听属性
+1. 当监视属性发生变化的时候，会掉函数自动调用
+2. 监视属性必须存在
+3. 监视属性的两种写法
+   1. new Vue 传入 watch配置
+   2. 通过vm.$watch
+
+````javascript
+ const vm = new Vue({
+    el:'#root',
+    data:{
+        ishot:true,
+    },
+    watch:{
+        ishot:{
+            immediate:true, // 初始化时让 handler 执行一次
+            handler(newo,ld){
+                console.log(newo,ld);
+            }
+        }
+    }
+})
+````
+````javascript
+vm.$watch('ishot',{
+    handler(aa,bb){
+        console.log(aa,bb,'??');
+    }
+})
+````
+
+## 深度监听
+1. vue 中的watch 默认不检测 对象内部的改变
+2. 配置 deep 可以检测到对象内部的多层改变
+
+````javascript
+watch:{
+    number:{
+        deep:true,
+        handler(aa,bb){
+            console.log('number 更改');
+        }
+    }
+}
+````
+
+### 简写方式
+````javascript
+watch:{
+    ishot(aa,bb){
+        console.log(aa,bb,'vv');
+    },
+}
+
+vm.$watch('ishot',function(aa,bb){
+    console.log(aa,bb,'vv');
+
+})
+````
