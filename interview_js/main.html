@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" name="" id="">
+    <button type="reset">add</button>
+    <script>
+        // var c = 2
+        // function add(...aa) {
+        //     console.log(...arguments);
+        //     console.log(this);
+        //     console.log(a + b + this.c);
+        // }
+        // const obj = {
+        //     c: 12
+        // }
+        // // add(1, 2)
+        // const aa = add.bind(undefined, 1, 2)
+        // aa(2,2)
+
+
+        var a = 1
+        function add(a, b) {
+            console.log(this);
+            console.log(a, b, this.a);
+            return 1223
+        }
+        const obj = {
+            a: 12,
+        }
+        // add.apply(obj, [1, 2])
+
+        Function.prototype._call = function(that,...arg){
+            that = that || window // 当值为 null 和 undefined 时 指向 window
+             
+            that.fun = this // that 调用 原函数 
+            const a = that.fun(...arg) // 保存返回值
+            // 删除多余字段
+            delete that.fun
+            return a
+        }
+
+        const c = add._call(null,1,2)
+        console.log(c);
+
+
+    </script>
+
+</body>
+
+</html>

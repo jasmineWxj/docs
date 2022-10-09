@@ -215,7 +215,91 @@ console.log(obj); //{ age: 30, name: '彭于晏', hobby: [ '运动', '唱歌', '
 > 
 > 箭头函数没有自己的 this，箭头函数的this在定义的时候，会继承自外层第一个普通函数的this
 
+## call apply bind
+### 区别
+1. 三者都可以更改this 的指向
+2. call(this.Arg,arg1,arg2,...) 
+   1. 立即执行
+   2. this.Arg 可选的，函数运行时使用的this值
+   3. 如果处于非严格模式下，则制定null 和 undefined 会自动替换为指定的全局对象
+   4. arg1，arg2 ... 制定的参数列表
+   5. 返回值：该方法的返回值，若该方法没有返回值，返回undefined
+3. apply(this.Arg,[arg1,arg2,...])
+   1. 立即执行
+   2. this.Arg 可选的，函数运行时使用的this值
+   3. 如果处于非严格模式下，则制定null 和 undefined 会自动替换为指定的全局对象
+   4. [arg1,arg2,...] 制定的参数列表
+   5. 返回值：该方法的返回值，若该方法没有返回值，返回undefined
+4. bind(this.Arg,arg1,arg2,...)
+   1. 会创建一个新的函数，调用新的函数时才会执行
+   2. this.Arg 可选的，函数运行时使用的this值
+   3. 如果处于非严格模式下，则制定null 和 undefined 会自动替换为指定的全局对象
+   4. 如果使用new 运算符构造绑定函数，则忽略该值
+   5. ,arg1,arg2,...目标函数被调用时参数列表预置参数，当目标参数调用时传入参数，会增加参数数量而不是替换
+   6. 返回值 原参数的拷贝，并拥有制定的this值和初始参数
 
+call
+````javascript
+var a = 1
+function add(a,b){
+    console.log(this); // obj:{a:12}
+    console.log(a,b,this.a); //1,2,12
+}
+const obj = {
+    a:12,
+}
+aad.call(obj,1,2) 
+````
+手写call
+
+````javascript
+  var a = 1
+function add(a, b) {
+    console.log(this);
+    console.log(a, b, this.a);
+    return 1223
+}
+const obj = {
+    a: 12,
+}
+
+Function.prototype._call = function(that,...arg){
+    that = that || window // 当值为 null 和 undefined 时 指向 window
+        
+    that.fun = this // that 调用 原函数 
+    const a = that.fun(...arg) // 保存返回值
+    // 删除多余字段
+    delete that.fun
+    return a
+}
+
+const c = add._call(null,1,2)
+console.log(c);
+````
+apply
+````javascript
+var a = 1
+function add(a,b){
+    console.log(this); // obj:{a:12}
+    console.log(a,b,this.a); //1,2,12
+}
+const obj = {
+    a:12,
+}
+aad.apply(obj,[1,2]) 
+````
+bind
+````javascript
+var c = 2
+function add() {
+    console.log(...arguments); // 1,2,2,2
+}
+const obj = {
+    c: 12
+}
+const aa = add.bind(obj, 1, 2)
+aa(2,2)
+````
 ## 闭包
 > 可以读取函数内部的变量
 > 
@@ -321,7 +405,96 @@ console.log(a == 1 && a == 2 && a == 3);
 > 2. 
 
 ## CommonJS规范和es6规范、
-### 什么是common js
-https://blog.csdn.net/m0_59075169/article/details/124371688?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166522333416782425191790%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=166522333416782425191790&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~baidu_landing_v2~default-2-124371688-null-null.142^v52^js_top,201^v3^control_2&utm_term=CommonJS%E8%A7%84%E8%8C%83%E5%92%8Ces6%E8%A7%84%E8%8C%83&spm=1018.2226.3001.4187
+### common js规定
+1. 每个模块内部，module变量代表当前模块
+2. module变量是一个模块，他的exports 属性 是对外的接口
+3. 加载某一个模块，其实是加载该模块的 module.exports 属性，require（）方法用于加载模块
 
-https://blog.csdn.net/qq_54753561/article/details/122149197?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166519958116782414988890%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=166519958116782414988890&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-122149197-null-null.142^v51^control_1,201^v3^control_2&utm_term=%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95&spm=1018.2226.3001.4187
+### 二者的区别
+#### 语法上的差异
+1. CommonJS 模块是 Node.js 专用的，与 ES6 模块不兼容。而ES6模块化在浏览器和node.js中都可以用。
+2. 语法上面，两者最明显的差异是，CommonJS 模块使用require()和module.exports，ES6 模块使用import和export。
+
+#### 什么是运行时加载
+````javascript
+// CommonJS模块
+let { stat, exists, readfile } = require('fs');
+
+// 等同于
+let _fs = require('fs');
+let stat = _fs.stat;
+let exists = _fs.exists;
+let readfile = _fs.readfile;
+````
+
+以上代码的实质是整体加载fs模块（即加载fs的所有方法），生成一个对象（_fs），然后再从这个对象上面读取 3 个方法。这种加载称为“运行时加载”，因为只有运行时才能得到这个对象，导致完全没办法在编译时做“静态优化”。
+#### 编译时加载
+````javascript
+// ES6模块
+import { stat, exists, readFile } from 'fs';
+````
+这个代码的实质是从fs模块加载 3 个方法，其他方法不加载。这种加载称为“编译时加载”或者静态加载，即 ES6 可以在编译时就完成模块加载，效率要比 CommonJS 模块的加载方式高。当然，这也导致了没法引用 ES6 模块本身，因为它不是对象。
+
+#### node.js 中使用模块化 ，Es6 和 CommonJS 的差异
+* CommonJS 输出的是一个拷贝的值，Es6 输出的是一个引用的值
+  * ⚠️ CommonJS 输出的是一个拷贝的值，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值
+  * Es6 是动态引用，并且不会缓存值
+* CommonJS 是运行时加载 Es6 是编译时输出接口
+  * 原因： CommonJS 加载的是一个对象（即module.exports属性），该对象只在脚本运行时才会生成。
+  * 而Es6 模块不是对象它的对外接口只是一种静态定义，在代码静态解析阶段就会生成
+* CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载，有一个独立的模块依赖的解析阶段。 
+
+CommonJS:
+````javascript
+// lib.js
+var counter = 3;
+function incCounter() {
+  counter++;
+}
+module.exports = {
+  counter: counter,
+  incCounter: incCounter,
+};
+
+// main.js
+var mod = require('./lib');
+
+console.log(mod.counter);  // 3
+mod.incCounter();
+console.log(mod.counter); // 3
+//lib.js模块加载以后，它的内部变化就影响不到输出的mod.counter了。
+//这是因为mod.counter是一个原始类型的值，会被缓存。
+//除非写成一个函数，才能得到内部变动后的值。
+// lib.js
+var counter = 3;
+function incCounter() {
+  counter++;
+}
+module.exports = {
+  get counter() {
+    return counter
+  },
+  incCounter: incCounter,
+};
+
+````
+
+Es6:
+````javascript
+// lib.js
+export let counter = 3;
+export function incCounter() {
+  counter++;
+}
+
+// main.js
+import { counter, incCounter } from './lib';
+console.log(counter); // 3
+incCounter();
+console.log(counter); // 4
+//ES6 模块输入的变量counter是活的，完全反应其所在模块lib.js内部的变化。
+
+````
+
+## for...in 迭代和 for...of 有什么区别
+## set和map数据结构有哪些常用的属性和方法？

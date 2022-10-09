@@ -79,11 +79,33 @@
 // console.log(a.shift);
 // console.log(a == 1 && a == 2 && a == 3) 
 
-let a = new Proxy({},{
-    i:1,
-    get:function(){
-        console.log(this);
-        return ()=> this.i ++
-    }
-})
-console.log(a == 1 && a == 2 && a == 3);
+// let a = new Proxy({},{
+//     i:1,
+//     get:function(){
+//         console.log(this);
+//         return ()=> this.i ++
+//     }
+// })
+// console.log(a == 1 && a == 2 && a == 3);
+// let a = [2,2,3,4,5]
+// let c = {
+//     aa:'12',
+//     bb:'ll'
+// }
+// for(let cc in a){
+//     console.log(cc);
+// }
+
+// let aa = new Set()
+// aa.add({nam:12})
+// console.log(aa);
+
+// call
+function add(a,b){
+    console.log(this);
+    console.log(a + b + this.c);
+}
+add(1,2)
+const obj = {
+    c:12
+}
