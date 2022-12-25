@@ -5,9 +5,9 @@
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ````
 
-!> 执行过程中遇到 443 问题
-!> 原因是使用了外国的资源
-!> 改成国内的资源
+> 执行过程中遇到 443 问题
+> 原因是使用了外国的资源
+> 改成国内的资源
 
 ````ssh
 sh -c "$(curl -fsSL https://gitee.com/shmhlsy/oh-my-zsh-install.sh/raw/master/install.sh)"
